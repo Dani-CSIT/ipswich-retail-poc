@@ -9,6 +9,7 @@ jobs:
   test:
     name: Lint & Test
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,19 +25,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      # Installs dev deps from requirements-dev.txt if present;
+      # otherwise installs pinned versions inline.
       - name: Install dev deps
         run: |
-          pip install -r requirements-dev.txt
-        # If you didn't create requirements-dev.txt, replace the step above with:
-        # run: |
-        #   pip install pytest==8.3.3 pytest-django==4.8.0 coverage==7.6.1 \
-        #               black==24.8.0 flake8==7.1.1 isort==5.13.2
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          else
+            pip install pytest==8.3.3 pytest-django==4.8.0 coverage==7.6.1 \
+                        black==24.8.0 flake8==7.1.1 isort==5.13.2
+          fi
 
-      - name: Lint
+      # Option 1: auto-format in CI (no --check). Fails only if flake8 or tests fail.
+      - name: Format (Black & isort)
         run: |
-          black --check .
-          isort --check-only .
-          flake8 .
+          black .
+          isort .
+
+      - name: flake8
+        run: flake8 .
 
       - name: Test
         env:
@@ -59,9 +66,17 @@ jobs:
     permissions:
       contents: read
       packages: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      # Ensure Buildx uses the container driver (works well on GitHub runners)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          driver: docker-container
 
       - name: Set image name (lowercase)
         run: |

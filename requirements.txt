@@ -1,10 +1,4 @@
-cat > requirements.txt << 'EOF'
 Django==5.2.6
 djangorestframework==3.15.2
 gunicorn==22.0.0
 psycopg2-binary==2.9.9
-EOF
-
-git add requirements.txt
-git commit -m "chore: slim runtime requirements (remove torch & extras)"
-git push

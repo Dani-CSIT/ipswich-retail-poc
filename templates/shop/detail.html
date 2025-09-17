@@ -1,6 +1,17 @@
-<!doctype html><html><body>
-<h1>{{ product.name }}</h1>
-<p>{{ product.description }}</p>
-<p>£{{ product.price }} | In stock: {{ product.stock }}</p>
-<a href="/">Back</a>
-</body></html>
+{% extends "base.html" %}
+{% block title %}{{ product.name }} · Ipswich Retail{% endblock %}
+{% block content %}
+<div class="row g-4 align-items-start">
+  <div class="col-md-6">
+    <img src="https://picsum.photos/seed/{{ product.sku }}/900/600" class="img-fluid rounded shadow-sm" alt="{{ product.name }}">
+  </div>
+  <div class="col-md-6">
+    <h2 class="mb-2">{{ product.name }}</h2>
+    <p class="text-muted">SKU: {{ product.sku }}</p>
+    <p class="lead fw-semibold">£{{ product.price|floatformat:2 }}</p>
+    <p>{{ product.description|default:"No description yet." }}</p>
+    <p class="small text-success">In stock: {{ product.stock }}</p>
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to products</a>
+  </div>
+</div>
+{% endblock %}

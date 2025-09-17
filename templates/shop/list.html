@@ -1,0 +1,10 @@
+<!doctype html><html><body>
+<h1>Products</h1>
+<ul>
+  {% for p in products %}
+    <li><a href="/p/{{ p.sku }}/">{{ p.name }}</a> — £{{ p.price }}</li>
+  {% empty %}
+    <li>No products yet</li>
+  {% endfor %}
+</ul>
+</body></html>

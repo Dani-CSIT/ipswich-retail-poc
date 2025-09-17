@@ -1,9 +1,23 @@
 FROM python:3.12-slim
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
 WORKDIR /app
+
+# system deps (build tooling for some wheels)
 RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
+
+# deps
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+
+# app
 COPY . .
-RUN python manage.py collectstatic --noinput
-CMD ["gunicorn","core.wsgi:application","--bind","0.0.0.0:8000"]
+
+# static will be produced by entrypoint
+EXPOSE 8000
+
+# use our entrypoint so migrations/static run on each deploy
+CMD ["bash", "-c", "./entrypoint.sh"]
